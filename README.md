@@ -1,8 +1,10 @@
 # `minipass-split`
 
-The equivalent of a line-splitting `Transform` stream, a la `split2`, but based on [minipass](https://www.npmjs.com/package/minipass).
+Split a [`minipass`](https://www.npmjs.com/package/minipass) text stream into a line stream.
 
-It is intentionally **NOT** API-compatible with [split](https://www.npmjs.com/package/split) or [`split2`](https://www.npmjs.com/package/split2).
+The equivalent of a line-splitting `Transform` stream, a la `split2`, but based on `minipass`.
+
+It is intentionally **NOT** API-compatible with [`split`](https://www.npmjs.com/package/split) or [`split2`](https://www.npmjs.com/package/split2).
 
 ## Installation
 
