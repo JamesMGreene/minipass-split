@@ -1,0 +1,60 @@
+{
+  "name": "minipass-split",
+  "version": "1.0.0",
+  "description": "Split a minipass text stream into a line stream",
+  "author": "James M. Greene <james.m.greene@gmail.com> (https://jamesmgreene.github.io/)",
+  "license": "MIT",
+  "keywords": [
+    "minipass",
+    "split",
+    "split2",
+    "split-by-line",
+    "by-line",
+    "stream"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JamesMGreene/minipass-split.git"
+  },
+  "bugs": {
+    "url": "https://github.com/JamesMGreene/minipass-split/issues"
+  },
+  "homepage": "https://github.com/JamesMGreene/minipass-split#readme",
+  "main": "index.js",
+  "files": [
+    "index.js",
+    "package.json",
+    "README.md",
+    "LICENSE.md"
+  ],
+  "scripts": {
+    "format": "prettier --write package.json index.js test.js",
+    "lint": "xo",
+    "test": "npm run format && npm run lint && npm run unit",
+    "unit": "ava"
+  },
+  "dependencies": {
+    "minipass": "^3.0.0"
+  },
+  "devDependencies": {
+    "ava": "^3.8.2",
+    "husky": "^4.2.5",
+    "prettier": "^2.0.5",
+    "pretty-quick": "^2.0.1",
+    "xo": "^0.30.0"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "pretty-quick --staged"
+    }
+  },
+  "prettier": {
+    "printWidth": 100,
+    "semi": false,
+    "singleQuote": true
+  },
+  "xo": {
+    "prettier": true,
+    "space": true
+  }
+}
