@@ -73,6 +73,14 @@ _Optional._ (`Boolean`): When used in conjunction with a specific `options.maxLe
 new Split({ maxLength: 10, skipOverflow: true })
 ```
 
+#### `skipEmpty`
+
+_Optional._ (`Boolean`): Set to `true` to skip lines without any content. Defaults to `false`.
+
+```js
+new Split({ skipEmpty: true })
+```
+
 ## License
 
 [MIT License](LICENSE.md) (c) 2020 James M. Greene
