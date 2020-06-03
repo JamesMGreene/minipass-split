@@ -1,6 +1,6 @@
 # `minipass-split`
 
-Split a [`minipass`](https://www.npmjs.com/package/minipass) text stream into a line stream.
+Splits a [`minipass`](https://www.npmjs.com/package/minipass) text stream into a line stream.
 
 The equivalent of a line-splitting `Transform` stream, a la `split2`, but based on `minipass`.
 
@@ -39,13 +39,13 @@ _Optional._ (`String` or `RegExp`): The pattern describing where each split shou
 
 ```js
 // Split on every ';' character
-new Split({ separator: ';' })
+new SplitStream({ separator: ';' })
 
 // Split on every 'BREAK' string
-new Split({ separator: 'BREAK' })
+new SplitStream({ separator: 'BREAK' })
 
 // Split on every ';' character, optionally followed by whitespace
-new Split({ separator: /,\s*/ })
+new SplitStream({ separator: /,\s*/ })
 ```
 
 #### `trailing`
@@ -54,7 +54,7 @@ _Optional._ (`Boolean`): By default, the last buffer not delimited by a newline 
 
 ```js
 // Do not emit the last line
-new Split({ trailing: false })
+new SplitStream({ trailing: false })
 ```
 
 #### `maxLength`
@@ -62,7 +62,7 @@ new Split({ trailing: false })
 _Optional._ (`Number`): The maximum buffer length without seeing a newline or `options.separator`. If a single line exceeds this, the stream will emit an error. Defaults to `Infinity`.
 
 ```js
-new Split({ maxLength: 10 })
+new SplitStream({ maxLength: 10 })
 ```
 
 #### `skipOverflow`
@@ -70,7 +70,7 @@ new Split({ maxLength: 10 })
 _Optional._ (`Boolean`): When used in conjunction with a specific `options.maxLength` value, setting `skipOverflow` to `true` will suppress the error from being emitted and instead just skip past any lines that cause the internal buffer to exceed `options.maxLength`. Defaults to `false`.
 
 ```js
-new Split({ maxLength: 10, skipOverflow: true })
+new SplitStream({ maxLength: 10, skipOverflow: true })
 ```
 
 #### `skipEmpty`
@@ -78,7 +78,7 @@ new Split({ maxLength: 10, skipOverflow: true })
 _Optional._ (`Boolean`): Set to `true` to skip lines without any content. Defaults to `false`.
 
 ```js
-new Split({ skipEmpty: true })
+new SplitStream({ skipEmpty: true })
 ```
 
 ## License
