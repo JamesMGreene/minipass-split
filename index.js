@@ -8,9 +8,10 @@ const Minipass = require('minipass')
 // Constants
 const TEXT_BUFFER = Symbol('textBuffer')
 const DECODER = Symbol('decoder')
-const HANDLE_ERROR = Symbol('handleError')
 const EMITTED_ERROR = Symbol('emittedError')
 const SEPARATOR = Symbol('separator')
+const HANDLE_ERROR = Symbol('handleError')
+const SUPER_WRITE = Symbol('superWrite')
 const defaultSeparator = /\r?\n/
 
 class SplitStream extends Minipass {
@@ -35,6 +36,18 @@ class SplitStream extends Minipass {
 
     // Return `false` to signal backpressure
     return false
+  }
+
+  [SUPER_WRITE](line) {
+    let keepWriting = true
+
+    // Only write the line if it is non-empty
+    if (line) {
+      keepWriting = super.write(line)
+    }
+
+    // Return the result of the last `write` attempt to help honor backpressure
+    return keepWriting
   }
 
   write(chunk, encoding, callback) {
@@ -75,7 +88,7 @@ class SplitStream extends Minipass {
     let keepWriting = true
     for (const line of lines) {
       try {
-        keepWriting = super.write(line)
+        keepWriting = this[SUPER_WRITE](line)
       } catch (error) {
         return this[HANDLE_ERROR](error, callback)
       }
@@ -112,7 +125,7 @@ class SplitStream extends Minipass {
     const lastLine = this[TEXT_BUFFER]
     if (lastLine && !this[EMITTED_ERROR]) {
       try {
-        super.write(lastLine)
+        this[SUPER_WRITE](lastLine)
       } catch (error) {
         return this[HANDLE_ERROR](error, callback)
       }

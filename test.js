@@ -305,3 +305,38 @@ test('splits with truncated utf-8 character', async (t) => {
   t.is(lines.length, 1)
   t.is(lines[0], '烫' + Buffer.from('e7', 'hex').toString())
 })
+
+test('skips empty lines on write', async (t) => {
+  const transform = new SplitStream({ encoding: 'utf8' })
+
+  transform.write('\nhello\n\n\nworld\n')
+  transform.end()
+
+  const lines = await transform.collect()
+  t.is(lines.length, 2)
+  t.is(lines[0], 'hello')
+  t.is(lines[1], 'world')
+})
+
+test('skips empty lines on end', async (t) => {
+  const transform = new SplitStream({ encoding: 'utf8' })
+
+  transform.end('\nhello\n\n\nworld\n')
+
+  const lines = await transform.collect()
+  t.is(lines.length, 2)
+  t.is(lines[0], 'hello')
+  t.is(lines[1], 'world')
+})
+
+test('skips empty lines between write and end', async (t) => {
+  const transform = new SplitStream({ encoding: 'utf8' })
+
+  transform.write('\nhello\n\n')
+  transform.end('\nworld\n')
+
+  const lines = await transform.collect()
+  t.is(lines.length, 2)
+  t.is(lines[0], 'hello')
+  t.is(lines[1], 'world')
+})
