@@ -245,3 +245,63 @@ test('does not modify the options object', async (t) => {
   t.is(lines.length, 0)
   t.deepEqual(options, { encoding: 'utf8' })
 })
+
+test('splits utf8 characters 1-by-1 as Buffers', async (t) => {
+  const transform = new SplitStream()
+
+  const buf = Buffer.from('烫烫烫\n锟斤拷', 'utf8')
+  for (let i = 0; i < buf.length; i += 1) {
+    transform.write(buf.slice(i, i + 1))
+  }
+
+  transform.end()
+
+  const lines = await transform.collect()
+  t.is(lines.length, 2)
+  t.deepEqual(lines[0], Buffer.from('烫烫烫', 'utf8'))
+  t.deepEqual(lines[1], Buffer.from('锟斤拷', 'utf8'))
+})
+
+test('splits utf8 characters 1-by-1 as strings if encoding is provided', async (t) => {
+  const transform = new SplitStream({ encoding: 'utf8' })
+
+  const buf = Buffer.from('烫烫烫\n锟斤拷', 'utf8')
+  for (let i = 0; i < buf.length; i += 1) {
+    transform.write(buf.slice(i, i + 1))
+  }
+
+  transform.end()
+
+  const lines = await transform.collect()
+  t.is(lines.length, 2)
+  t.is(lines[0], '烫烫烫')
+  t.is(lines[1], '锟斤拷')
+})
+
+test('splits utf8 characters 2-by-2', async (t) => {
+  const transform = new SplitStream({ encoding: 'utf8' })
+
+  const buf = Buffer.from('烫烫烫\n锟斤拷', 'utf8')
+  for (let i = 0; i < buf.length; i += 2) {
+    transform.write(buf.slice(i, i + 2))
+  }
+
+  transform.end()
+
+  const lines = await transform.collect()
+  t.is(lines.length, 2)
+  t.is(lines[0], '烫烫烫')
+  t.is(lines[1], '锟斤拷')
+})
+
+test('splits with truncated utf-8 character', async (t) => {
+  const transform = new SplitStream({ encoding: 'utf8' })
+
+  const buf = Buffer.from('烫烫', 'utf8')
+  transform.write(buf.slice(0, 3))
+  transform.end(buf.slice(3, 4))
+
+  const lines = await transform.collect()
+  t.is(lines.length, 1)
+  t.is(lines[0], '烫' + Buffer.from('e7', 'hex').toString())
+})

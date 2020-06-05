@@ -1,9 +1,13 @@
+// Node.js core modules
+const { StringDecoder } = require('string_decoder')
+
 // Userland modules
 const kindOf = require('kind-of')
 const Minipass = require('minipass')
 
 // Constants
 const TEXT_BUFFER = Symbol('textBuffer')
+const DECODER = Symbol('decoder')
 const HANDLE_ERROR = Symbol('handleError')
 const EMITTED_ERROR = Symbol('emittedError')
 const SEPARATOR = Symbol('separator')
@@ -16,6 +20,7 @@ class SplitStream extends Minipass {
     const { separator } = options
 
     this[TEXT_BUFFER] = ''
+    this[DECODER] = new StringDecoder('utf8')
     this[EMITTED_ERROR] = false
     this[SEPARATOR] = ['string', 'regexp'].includes(kindOf(separator))
       ? separator
@@ -48,22 +53,20 @@ class SplitStream extends Minipass {
       return this[HANDLE_ERROR](new Error('Previously emitted an error'), callback)
     }
 
-    // Convert chunk to string
-    const chunkType = kindOf(chunk)
-    let text = chunk
-    if (chunkType === 'string' && kindOf(encoding) === 'string' && encoding !== 'utf8') {
-      text = Buffer.from(chunk, encoding).toString()
-    } else if (chunkType === 'buffer') {
-      text = chunk.toString()
+    // Convert chunk to a buffer
+    let buffer = chunk
+    if (kindOf(chunk) === 'string') {
+      buffer = Buffer.from(chunk, kindOf(encoding) === 'string' ? encoding : 'utf8')
     }
 
-    // If the chunk could not be converted to a string, bail out early
-    if (kindOf(text) !== 'string') {
-      return this[HANDLE_ERROR](new Error('A chunk could not be converted to a string'), callback)
+    // If the chunk could not be converted to a buffer, bail out early
+    if (kindOf(buffer) !== 'buffer') {
+      return this[HANDLE_ERROR](new Error('A chunk could not be converted to a buffer'), callback)
     }
 
     // Split it up!
-    const lines = (this[TEXT_BUFFER] + text).split(this[SEPARATOR])
+    this[TEXT_BUFFER] += this[DECODER].write(buffer)
+    const lines = this[TEXT_BUFFER].split(this[SEPARATOR])
 
     // Save the last partial line for the next write
     this[TEXT_BUFFER] = lines.pop()
@@ -102,6 +105,9 @@ class SplitStream extends Minipass {
     if (chunk) {
       this.write(chunk, encoding)
     }
+
+    // Forward any gibberish left in the decoder
+    this[TEXT_BUFFER] += this[DECODER].end()
 
     const lastLine = this[TEXT_BUFFER]
     if (lastLine && !this[EMITTED_ERROR]) {
