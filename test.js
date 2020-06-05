@@ -152,10 +152,32 @@ test('splits using a custom string separator', async (t) => {
   t.is(lines[1], 'world')
 })
 
+test('splits using a custom multi-character string separator', async (t) => {
+  const transform = new SplitStream({ encoding: 'utf8', separator: 'BREAK' })
+
+  transform.end('helloBREAKworld')
+
+  const lines = await transform.collect()
+  t.is(lines.length, 2)
+  t.is(lines[0], 'hello')
+  t.is(lines[1], 'world')
+})
+
 test('splits using a custom RegExp separator', async (t) => {
   const transform = new SplitStream({ encoding: 'utf8', separator: /~/ })
 
   transform.end('hello~world')
+
+  const lines = await transform.collect()
+  t.is(lines.length, 2)
+  t.is(lines[0], 'hello')
+  t.is(lines[1], 'world')
+})
+
+test('splits using a custom multi-character RegExp separator', async (t) => {
+  const transform = new SplitStream({ encoding: 'utf8', separator: /BREAK/ })
+
+  transform.end('helloBREAKworld')
 
   const lines = await transform.collect()
   t.is(lines.length, 2)
