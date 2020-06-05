@@ -108,8 +108,7 @@ class SplitStream extends Minipass {
       try {
         super.write(lastLine)
       } catch (error) {
-        this[EMITTED_ERROR] = true
-        this.emit('error', error)
+        return this[HANDLE_ERROR](error, callback)
       }
     }
 
