@@ -34,6 +34,7 @@
     "unit": "ava"
   },
   "dependencies": {
+    "kind-of": "^6.0.3",
     "minipass": "^3.0.0"
   },
   "devDependencies": {
@@ -51,7 +52,8 @@
   "prettier": {
     "printWidth": 100,
     "semi": false,
-    "singleQuote": true
+    "singleQuote": true,
+    "bracketSpacing": true
   },
   "xo": {
     "prettier": true,
